@@ -18,8 +18,8 @@ void main() async {
   // 상태바 스타일 (라이트 텍스트 - 다크모드용)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -37,52 +37,70 @@ class MusicMemoApp extends StatelessWidget {
       title: 'Music Memo',
       debugShowCheckedModeBanner: false,
 
-      // 다크 테마 설정
+      // 브라운 우드 톤 테마 설정
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: const Color(0xFF30D158), // Apple 그린
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFFDFCF8), // 밝은 웜 베이지 배경
+        primaryColor: const Color(0xFF8D6E63), // 웜 브라운
 
         // 컬러 스킴
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF30D158),
-          secondary: Color(0xFF30D158),
-          surface: Color(0xFF1C1C1E),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF8D6E63),
+          secondary: Color(0xFFD7CCC8),
+          surface: Color(0xFFF5F1E6), // 카드 배경 (약간 더 진한 베이지)
+          onSurface: Color(0xFF4E342E), // 기본 텍스트
         ),
 
         // 앱바 테마
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0xFFFDFCF8),
           elevation: 0,
           centerTitle: true,
+          iconTheme: IconThemeData(color: Color(0xFF4E342E)),
+          titleTextStyle: TextStyle(
+            color: Color(0xFF4E342E),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
 
         // 텍스트 테마
         textTheme: const TextTheme(
           headlineLarge: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF4E342E), // 다크 브라운
             fontSize: 34,
             fontWeight: FontWeight.bold,
           ),
           bodyLarge: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF4E342E),
             fontSize: 16,
           ),
           bodyMedium: TextStyle(
-            color: Colors.white70,
+            color: Color(0xFF795548), // 미디엄 브라운
             fontSize: 14,
+          ),
+          titleMedium: TextStyle(
+            color: Color(0xFF4E342E),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
         ),
 
         // 입력 필드 테마
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFF1C1C1E),
+          fillColor: const Color(0xFFF5F1E6), // 입력란 배경 (Surface와 동일하거나 비슷하게)
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+          hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+
+        // 아이콘 테마
+        iconTheme: const IconThemeData(
+          color: Color(0xFF795548),
         ),
       ),
 

@@ -50,7 +50,7 @@ class RecordingCard extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
-          color: recording.isPinned ? Colors.grey : const Color(0xFFFF9F0A),
+          color: recording.isPinned ? const Color(0xFF5D4037) : Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -83,7 +83,7 @@ class RecordingCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1C1C1E),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -109,7 +109,7 @@ class RecordingCard extends StatelessWidget {
                         Text(
                           recording.displayTitle,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF4E342E),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -119,7 +119,7 @@ class RecordingCard extends StatelessWidget {
                           Text(
                             '메모',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.4),
+                              color: const Color(0xFF795548).withOpacity(0.6),
                               fontSize: 13,
                             ),
                           )
@@ -127,7 +127,7 @@ class RecordingCard extends StatelessWidget {
                           Text(
                             recording.durationString,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: const Color(0xFF795548).withOpacity(0.7),
                               fontSize: 14,
                             ),
                           ),
@@ -137,7 +137,7 @@ class RecordingCard extends StatelessWidget {
                     // 메모
                     if (memoPreview.text.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      ...memoPreview.lines.map((line) => _buildMemoLine(line)),
+                      ...memoPreview.lines.map((line) => _buildMemoLine(line, context)),
                     ],
 
                     // 태그들
@@ -172,7 +172,7 @@ class RecordingCard extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   child: Icon(
                     Icons.delete_outline,
-                    color: Colors.white.withOpacity(0.5),
+                    color: const Color(0xFF795548).withOpacity(0.5),
                     size: 20,
                   ),
                 ),
@@ -184,14 +184,14 @@ class RecordingCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMemoLine(_MemoLine line) {
+  Widget _buildMemoLine(_MemoLine line, BuildContext context) {
     if (line.isChecklist) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Checkbox(
             value: line.isDone,
-            activeColor: const Color(0xFF0A84FF),
+            activeColor: Theme.of(context).primaryColor,
             checkColor: Colors.white,
             visualDensity: VisualDensity.compact,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -205,7 +205,7 @@ class RecordingCard extends StatelessWidget {
               child: Text(
                 line.text,
                 style: TextStyle(
-                  color: line.isDone ? Colors.white.withOpacity(0.4) : Colors.white,
+                  color: line.isDone ? const Color(0xFF4E342E).withOpacity(0.4) : const Color(0xFF4E342E),
                   fontSize: 14,
                   decoration: line.isDone ? TextDecoration.lineThrough : TextDecoration.none,
                 ),
@@ -220,7 +220,7 @@ class RecordingCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Text(
         line.text,
-        style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14),
+        style: TextStyle(color: const Color(0xFF795548).withOpacity(0.8), fontSize: 14),
       ),
     );
   }
@@ -232,13 +232,13 @@ class _MemoIcon extends StatelessWidget {
     return Container(
       width: 44,
       height: 44,
-      decoration: const BoxDecoration(
-        color: Color(0xFF2C2C2E),
+      decoration: BoxDecoration(
+        color: Theme.of(context).inputDecorationTheme.fillColor,
         shape: BoxShape.circle,
       ),
       child: Icon(
         Icons.note_rounded,
-        color: Colors.white.withOpacity(0.7),
+        color: const Color(0xFF795548).withOpacity(0.8),
         size: 22,
       ),
     );
@@ -264,13 +264,13 @@ class _PlayButton extends StatelessWidget {
         height: 44,
         decoration: BoxDecoration(
           color: isPlaying
-              ? const Color(0xFF30D158)
-              : const Color(0xFF2C2C2E),
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).inputDecorationTheme.fillColor,
           shape: BoxShape.circle,
         ),
         child: Icon(
           isPlaying ? Icons.stop : Icons.play_arrow,
-          color: Colors.white,
+          color: isPlaying ? Colors.white : const Color(0xFF795548),
           size: 24,
         ),
       ),

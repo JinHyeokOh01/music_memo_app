@@ -40,15 +40,15 @@ class Tag {
     isPinned: isPinned ?? this.isPinned,
   );
 
-  /// 기본 색상 팔레트
+  /// 기본 색상 팔레트 (브라운 우드 톤)
   static const List<Color> defaultColors = [
-    Color(0xFF30D158), // 녹색
-    Color(0xFF0A84FF), // 파랑
-    Color(0xFFFF9F0A), // 주황
-    Color(0xFFFF453A), // 빨강
-    Color(0xFFBF5AF2), // 보라
-    Color(0xFF64D2FF), // 하늘
-    Color(0xFFFFD60A), // 노랑
-    Color(0xFFFF375F), // 핑크
+    Color(0xFFD4A574), // 따뜻한 베이지/골드
+    Color(0xFFC97D4A), // 오렌지 브라운
+    Color(0xFFB85C3A), // 어두운 오렌지 브라운
+    Color(0xFF8B6F47), // 중간 브라운
+    Color(0xFFA67C52), // 황금 브라운
+    Color(0xFFE8C5A0), // 밝은 베이지
+    Color(0xFF9D7A5C), // 차콜 브라운
+    Color(0xFFC4A082), // 따뜻한 브라운
   ];
 }

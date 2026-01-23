@@ -27,14 +27,14 @@ class RecordingButton extends StatelessWidget {
             height: isRecording ? 72 : 64,
             decoration: BoxDecoration(
               color: isRecording
-                  ? const Color(0xFFFF3B30)
-                  : const Color(0xFF30D158),
+                  ? const Color(0xFFD32F2F) // 녹음 중: 웜 레드
+                  : Theme.of(context).primaryColor, // 녹음 대기: 웜 브라운
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
                   color: (isRecording
-                      ? const Color(0xFFFF3B30)
-                      : const Color(0xFF30D158))
+                      ? const Color(0xFFD32F2F)
+                      : Theme.of(context).primaryColor)
                       .withOpacity(0.4),
                   blurRadius: 20,
                   spreadRadius: 2,

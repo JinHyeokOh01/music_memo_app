@@ -28,15 +28,15 @@ class _TagManageScreenState extends State<TagManageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF0A84FF), size: 28),
+          icon: Icon(Icons.chevron_left, color: Theme.of(context).primaryColor, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('태그 관리', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600)),
+        title: const Text('태그 관리', style: TextStyle(color: Color(0xFF4E342E), fontSize: 17, fontWeight: FontWeight.w600)),
         centerTitle: true,
       ),
       body: Column(
@@ -56,15 +56,15 @@ class _TagManageScreenState extends State<TagManageScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFF1C1C1E),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add, color: Color(0xFF0A84FF), size: 18),
+              const Icon(Icons.add, color: Color(0xFF8D6E63), size: 18),
               const SizedBox(width: 8),
-              const Text('태그 추가', style: TextStyle(color: Color(0xFF0A84FF), fontSize: 15, fontWeight: FontWeight.w500)),
+              const Text('태그 추가', style: TextStyle(color: Color(0xFF8D6E63), fontSize: 15, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -75,7 +75,7 @@ class _TagManageScreenState extends State<TagManageScreen> {
   Widget _buildTagList() {
     if (_tags.isEmpty) {
       return Center(
-        child: Text('등록된 태그가 없어요', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+        child: Text('등록된 태그가 없어요', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5))),
       );
     }
 
@@ -135,22 +135,22 @@ class _TagManageScreenState extends State<TagManageScreen> {
   void _showTagOptions(Tag tag) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(width: 36, height: 4, margin: const EdgeInsets.only(top: 8, bottom: 16),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+              decoration: BoxDecoration(color: const Color(0xFF795548).withOpacity(0.4), borderRadius: BorderRadius.circular(2))),
             ListTile(
-              leading: const Icon(Icons.edit_outlined, color: Colors.white70),
-              title: const Text('편집', style: TextStyle(color: Colors.white)),
+              leading: const Icon(Icons.edit_outlined, color: Color(0xFF795548)),
+              title: const Text('편집', style: TextStyle(color: Color(0xFF4E342E))),
               onTap: () { Navigator.pop(context); _editTag(tag); },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline, color: Color(0xFFFF453A)),
-              title: const Text('삭제', style: TextStyle(color: Color(0xFFFF453A))),
+              leading: const Icon(Icons.delete_outline, color: Color(0xFFD32F2F)),
+              title: const Text('삭제', style: TextStyle(color: Color(0xFFD32F2F))),
               onTap: () { Navigator.pop(context); _deleteTag(tag); },
             ),
             const SizedBox(height: 8),
@@ -186,15 +186,15 @@ class _TagManageScreenState extends State<TagManageScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1E),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-        content: Text(message, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        title: Text(title, style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 16)),
+        content: Text(message, style: const TextStyle(color: Color(0xFFC9B8A3), fontSize: 14)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false),
-            child: Text('취소', style: TextStyle(color: Colors.white.withOpacity(0.5)))),
+            child: Text('취소', style: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5)))),
           TextButton(onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제', style: TextStyle(color: Color(0xFFFF453A)))),
+            child: const Text('삭제', style: TextStyle(color: Color(0xFFB85C3A)))),
         ],
       ),
     );
@@ -225,7 +225,7 @@ class _TagDialogState extends State<_TagDialog> {
   Widget build(BuildContext context) {
     final isEdit = widget.tag != null;
     return Dialog(
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -233,23 +233,23 @@ class _TagDialogState extends State<_TagDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isEdit ? '태그 편집' : '태그 추가', style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600)),
+            Text(isEdit ? '태그 편집' : '태그 추가', style: const TextStyle(color: Color(0xFF4E342E), fontSize: 17, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
             TextField(
               controller: _ctrl,
               autofocus: true,
-              style: const TextStyle(color: Colors.white, fontSize: 15),
+              style: const TextStyle(color: Color(0xFF4E342E), fontSize: 15),
               decoration: InputDecoration(
                 hintText: '태그 이름',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
                 filled: true,
-                fillColor: const Color(0xFF2C2C2E),
+                fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
             ),
             const SizedBox(height: 14),
-            Text('색상', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+            Text('색상', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.7), fontSize: 12)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 10,
@@ -263,7 +263,7 @@ class _TagDialogState extends State<_TagDialog> {
                     decoration: BoxDecoration(
                       color: c,
                       shape: BoxShape.circle,
-                      border: Border.all(color: sel ? Colors.white : Colors.transparent, width: 2),
+                      border: Border.all(color: sel ? const Color(0xFF4E342E) : Colors.transparent, width: 2),
                     ),
                   ),
                 );
@@ -274,7 +274,7 @@ class _TagDialogState extends State<_TagDialog> {
               children: [
                 Expanded(child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('취소', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  child: Text('취소', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5))),
                 )),
                 Expanded(child: TextButton(
                   onPressed: () {
@@ -287,7 +287,7 @@ class _TagDialogState extends State<_TagDialog> {
                       isPinned: widget.tag?.isPinned ?? false,
                     ));
                   },
-                  child: Text(isEdit ? '저장' : '추가', style: const TextStyle(color: Color(0xFF0A84FF), fontWeight: FontWeight.w600)),
+                  child: Text(isEdit ? '저장' : '추가', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600)),
                 )),
               ],
             ),

@@ -179,12 +179,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1E),
-        title: Text(isMemo ? '메모 삭제' : '녹음 삭제', style: const TextStyle(color: Colors.white)),
-        content: Text(isMemo ? '이 메모를 삭제할까요?' : '이 녹음을 삭제할까요?', style: const TextStyle(color: Colors.white70)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: Text(isMemo ? '메모 삭제' : '녹음 삭제', style: const TextStyle(color: Color(0xFF4E342E))),
+        content: Text(isMemo ? '이 메모를 삭제할까요?' : '이 녹음을 삭제할까요?', style: const TextStyle(color: Color(0xFF795548))),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('삭제', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('삭제', style: TextStyle(color: Color(0xFFD32F2F)))),
         ],
       ),
     );
@@ -281,16 +281,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1E),
+        backgroundColor: const Color(0xFF2D241F),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: const Text('태그 추가', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: const Text('태그 추가', style: TextStyle(color: Color(0xFFF5E6D3), fontSize: 16)),
         content: Text(
           '"$name" 태그가 없어요. 추가하시겠습니까?',
-          style: const TextStyle(color: Colors.white70, fontSize: 14),
+          style: const TextStyle(color: Color(0xFFC9B8A3), fontSize: 14),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('취소', style: TextStyle(color: Colors.white.withOpacity(0.5)))),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('추가', style: TextStyle(color: Color(0xFF0A84FF)))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('취소', style: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5)))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('추가', style: TextStyle(color: Color(0xFFD4A574)))),
         ],
       ),
     );
@@ -305,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red.shade700),
+      SnackBar(content: Text(message), backgroundColor: const Color(0xFFD32F2F)),
     );
   }
 
@@ -351,10 +351,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF30D158)))
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFFD4A574)))
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -378,13 +378,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('전체', style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.bold)),
+          const Text('나의 체크리스트', style: TextStyle(color: Color(0xFF4E342E), fontSize: 25, fontWeight: FontWeight.bold)),
           GestureDetector(
             onTap: _openTagManageScreen,
             child: Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: const Color(0xFF1C1C1E), borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.settings, color: Color(0xFF8E8E93), size: 20),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.settings, color: Color(0xFF795548), size: 20),
             ),
           ),
         ],
@@ -406,15 +406,15 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isDisabled ? const Color(0xFF2C2C2E) : const Color(0xFF1C1C1E),
+                color: isDisabled ? const Color(0xFFE0DBD0) : Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: Colors.white.withOpacity(isDisabled ? 0.08 : 0.15),
+                  color: const Color(0xFF795548).withOpacity(isDisabled ? 0.08 : 0.15),
                 ),
               ),
               child: Icon(
                 Icons.note_alt_rounded,
-                color: isDisabled ? Colors.white24 : Colors.white70,
+                color: isDisabled ? const Color(0xFF795548).withOpacity(0.3) : const Color(0xFF795548),
                 size: 22,
               ),
             ),
@@ -440,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF1C1C1E),
+              color: Theme.of(context).colorScheme.surface, // 카드 배경
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -463,11 +463,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(tag.name, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+                            Text(tag.name, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 13, fontWeight: FontWeight.w500)),
                             const SizedBox(width: 4),
                             GestureDetector(
                               onTap: () => _removeTagFilter(id),
-                              child: const Icon(Icons.close, color: Colors.white70, size: 14),
+                              child: const Icon(Icons.close, color: Color(0xFF795548), size: 14),
                             ),
                           ],
                         ),
@@ -480,16 +480,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 // 검색 입력
                 Row(
                   children: [
-                    Icon(Icons.search, color: Colors.white.withOpacity(0.3), size: 18),
+                    Icon(Icons.search, color: const Color(0xFF795548).withOpacity(0.5), size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: _searchCtrl,
                         focusNode: _searchFocus,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style: const TextStyle(color: Color(0xFF4E342E), fontSize: 14),
                         decoration: InputDecoration(
                           hintText: '태그 검색 후 엔터로 추가...',
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                          hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -522,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _searchCtrl.clear();
                           setState(() => _searchQuery = '');
                         },
-                        child: Icon(Icons.close, color: Colors.white.withOpacity(0.4), size: 16),
+                        child: Icon(Icons.close, color: const Color(0xFF795548).withOpacity(0.6), size: 16),
                       ),
                   ],
                 ),
@@ -536,13 +536,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               constraints: const BoxConstraints(maxHeight: 150),
               decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E),
+            color: Theme.of(context).inputDecorationTheme.fillColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: _searchResults.isEmpty
                   ? Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Text('검색 결과 없음', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                      child: Text('검색 결과 없음', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.4), fontSize: 13)),
                     )
                   : ListView.builder(
                       shrinkWrap: true,
@@ -573,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     tag.name,
                                     style: TextStyle(
-                                      color: isSelected ? tag.color : Colors.white,
+                                      color: isSelected ? tag.color : const Color(0xFF4E342E),
                                       fontSize: 14,
                                       fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                                     ),
@@ -599,11 +599,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.music_note_outlined, size: 64, color: Colors.white.withOpacity(0.15)),
+          Icon(Icons.music_note_outlined, size: 64, color: const Color(0xFF795548).withOpacity(0.15)),
           const SizedBox(height: 16),
           Text(
             _selectedTagIds.isNotEmpty ? '조건에 맞는 녹음이 없어요' : '첫 녹음을 시작해보세요',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 15),
+            style: TextStyle(color: const Color(0xFF795548).withOpacity(0.4), fontSize: 15),
           ),
         ],
       ),
@@ -625,11 +625,11 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(4, 16, 4, 12),
             child: Row(
               children: [
-                Icon(Icons.push_pin, color: const Color(0xFFFF9F0A), size: 16),
+                Icon(Icons.push_pin, color: const Color(0xFFD4A574), size: 16),
                 const SizedBox(width: 6),
                 Text(
                   '고정됨',
-                  style: TextStyle(color: const Color(0xFFFF9F0A), fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: const Color(0xFFD4A574), fontSize: 14, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -648,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(4, 20, 4, 12),
                 child: Text(
                   dateKey,
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: const Color(0xFF795548).withOpacity(0.6), fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
               ...recordings.map((recording) => _buildRecordingCard(recording)),

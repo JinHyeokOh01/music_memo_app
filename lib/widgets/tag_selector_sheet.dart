@@ -79,7 +79,7 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       decoration: const BoxDecoration(
-        color: Color(0xFF1C1C1E),
+        color: Color(0xFF2D241F),
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: Column(
@@ -90,7 +90,7 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
             height: 4,
             margin: const EdgeInsets.only(top: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: const Color(0xFFC9B8A3).withOpacity(0.4),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -102,26 +102,26 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
               children: [
                 Text(
                   '태그 선택',
-                  style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                  style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 17, fontWeight: FontWeight.w600),
                 ),
                 if (_selected.isNotEmpty) ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0A84FF),
+                      color: const Color(0xFFD4A574),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '${_selected.length}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                      style: const TextStyle(color: Color(0xFF1A1612), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Text('완료', style: TextStyle(color: Color(0xFF0A84FF), fontSize: 16, fontWeight: FontWeight.w500)),
+                  child: const Text('완료', style: TextStyle(color: Color(0xFFD4A574), fontSize: 16, fontWeight: FontWeight.w500)),
                 ),
               ],
             ),
@@ -132,13 +132,13 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
             padding: const EdgeInsets.all(12),
             child: TextField(
               controller: _searchCtrl,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 14),
               decoration: InputDecoration(
                 hintText: '태그 검색...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.4), size: 18),
+                hintStyle: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5)),
+                prefixIcon: Icon(Icons.search, color: const Color(0xFFC9B8A3).withOpacity(0.6), size: 18),
                 filled: true,
-                fillColor: const Color(0xFF2C2C2E),
+                fillColor: const Color(0xFF3D3328),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 isDense: true,
@@ -172,17 +172,17 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('검색 결과 없음', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+            Text('검색 결과 없음', style: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5))),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () => _createTag(_searchQuery),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0A84FF),
+                  color: const Color(0xFFD4A574),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Text('"$_searchQuery" 만들기', style: const TextStyle(color: Colors.white, fontSize: 14)),
+                child: Text('"$_searchQuery" 만들기', style: const TextStyle(color: Color(0xFF1A1612), fontSize: 14)),
               ),
             ),
           ],
@@ -250,20 +250,20 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? tag.color : const Color(0xFF2C2C2E),
+          color: isSelected ? tag.color : const Color(0xFF3D3328),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
-              const Icon(Icons.check, color: Colors.white, size: 14),
+              const Icon(Icons.check, color: Color(0xFF1A1612), size: 14),
               const SizedBox(width: 4),
             ],
             Text(
               tag.name,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white70,
+                color: isSelected ? const Color(0xFF1A1612) : const Color(0xFFC9B8A3),
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
               ),

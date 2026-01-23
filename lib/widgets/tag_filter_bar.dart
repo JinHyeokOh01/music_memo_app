@@ -45,7 +45,7 @@ class TagFilterBar extends StatelessWidget {
                 color: isSelected ? tag.color : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? tag.color : const Color(0xFF3A3A3C),
+                  color: isSelected ? tag.color : const Color(0xFF3D3328),
                   width: 1,
                 ),
               ),
@@ -53,7 +53,7 @@ class TagFilterBar extends StatelessWidget {
                 child: Text(
                   tag.name,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white60,
+                    color: isSelected ? const Color(0xFF1A1612) : const Color(0xFFC9B8A3),
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                   ),
