@@ -253,6 +253,7 @@ class _TagDialogState extends State<_TagDialog> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 10,
+              runSpacing: 12,
               children: Tag.defaultColors.map((c) {
                 final sel = _color == c;
                 return GestureDetector(
