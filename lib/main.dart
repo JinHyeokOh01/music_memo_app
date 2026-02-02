@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'models/summary.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
   // Flutter 엔진 초기화
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Hive 초기화
+  await Hive.initFlutter();
+  Hive.registerAdapter(SummaryAdapter());
+  Hive.registerAdapter(SummaryTypeAdapter());
 
   // 한국어 날짜 포맷 초기화
   try {

@@ -5,10 +5,13 @@ import '../models/recording.dart';
 import '../models/tag.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
+import '../services/summary_service.dart';
+import '../services/openai_service.dart';
 import '../widgets/recording_card.dart';
 import '../widgets/recording_button.dart';
 import 'recording_detail_screen.dart';
 import 'tag_manage_screen.dart';
+import 'summary_screen.dart';
 
 /// 한국 시간대(UTC+9)로 현재 시간 반환
 DateTime getKoreaTime() {
@@ -17,7 +20,7 @@ DateTime getKoreaTime() {
   return utcNow.add(const Duration(hours: 9));
 }
 
-/// 홈 화면 - 녹음 목록 표시
+/// 홈 화면 - 녹음 목록 및 요약 탭
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -28,6 +31,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final StorageService _storageService = StorageService();
   final AudioService _audioService = AudioService();
+  late final SummaryService _summaryService;
+  late final OpenAIService _openAIService;
+
+  int _currentIndex = 0;
+
+  // --- Recording List State ---
   final TextEditingController _searchCtrl = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
 
@@ -41,11 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _openAIService = OpenAIService();
+    _summaryService = SummaryService(
+      storageService: _storageService,
+      openAIService: _openAIService,
+    );
     _initServices();
   }
 
   Future<void> _initServices() async {
     await _storageService.init();
+    await _summaryService.init();
     await _loadData();
     setState(() => _isLoading = false);
   }
@@ -56,12 +71,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     recordings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    setState(() {
-      _recordings = recordings;
-      _tags = tags;
-    });
+    if (mounted) {
+      setState(() {
+        _recordings = recordings;
+        _tags = tags;
+      });
+    }
   }
 
+  // ... (기존 메서드들 중 녹음/태그 관련)
+  
   Future<void> _toggleRecording() async {
     if (_isRecording) {
       final recording = await _audioService.stopRecording();
@@ -229,14 +248,12 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
   }
 
-  // 태그 선택에 추가
   void _addTagFilter(String tagId) {
     if (!_selectedTagIds.contains(tagId)) {
       setState(() => _selectedTagIds.add(tagId));
     }
   }
 
-  // 태그 필터에서 제거
   void _removeTagFilter(String tagId) {
     setState(() => _selectedTagIds.remove(tagId));
   }
@@ -297,7 +314,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return result ?? false;
   }
 
-  // 검색 결과 태그
   List<Tag> get _searchResults {
     if (_searchQuery.isEmpty) return _tags;
     return _tags.where((t) => t.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
@@ -332,7 +348,6 @@ class _HomeScreenState extends State<HomeScreen> {
             }
             if (recordingsChanged) await _storageService.saveRecordings(_recordings);
 
-            // 선택된 태그 중 삭제된 것 제거
             _selectedTagIds.removeWhere((id) => !tagIds.contains(id));
           },
         ),
@@ -352,41 +367,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      // 하단 네비게이션 바 추가
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        backgroundColor: const Color(0xFFFDFCF8),
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: const Color(0xFFD7CCC8),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: '기록'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'AI 요약'),
+        ],
+      ),
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Color(0xFFD4A574)))
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            : IndexedStack(
+                index: _currentIndex,
                 children: [
-                  _buildHeader(),
-                  _buildTagSelector(),
-                  Expanded(
-                    child: _filteredRecordings.isEmpty
-                        ? _buildEmptyState()
-                        : _buildRecordingList(),
+                  // 1. 기존 기록 탭
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader('나의 체크리스트'),
+                      _buildTagSelector(),
+                      Expanded(
+                        child: _filteredRecordings.isEmpty
+                            ? _buildEmptyState()
+                            : _buildRecordingList(),
+                      ),
+                      _buildBottomActions(),
+                    ],
                   ),
-                  _buildBottomActions(),
+                  
+                  // 2. 새로운 요약 탭
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader('연습 분석 리포트'), // 헤더 재사용
+                      Expanded(
+                        child: SummaryScreen(
+                          summaryService: _summaryService,
+                          openAIService: _openAIService,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('나의 체크리스트', style: TextStyle(color: Color(0xFF4E342E), fontSize: 25, fontWeight: FontWeight.bold)),
-          GestureDetector(
-            onTap: _openTagManageScreen,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.settings, color: Color(0xFF795548), size: 20),
+          Text(title, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 25, fontWeight: FontWeight.bold)),
+          if (_currentIndex == 0) // 태그 관리 버튼은 기록 탭에서만 표시
+            GestureDetector(
+              onTap: _openTagManageScreen,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(8)),
+                child: const Icon(Icons.settings, color: Color(0xFF795548), size: 20),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -430,6 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ... (나머지 위젯 빌더들은 이름 그대로 유지)
   Widget _buildTagSelector() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
