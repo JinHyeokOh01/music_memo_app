@@ -475,9 +475,9 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: tag.color.withOpacity(0.15),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: tag.color.withOpacity(0.3)),
+              border: Border.all(color: tag.color.withOpacity(0.5)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

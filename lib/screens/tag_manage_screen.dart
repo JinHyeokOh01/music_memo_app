@@ -97,9 +97,9 @@ class _TagManageScreenState extends State<TagManageScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: tag.color.withOpacity(0.1),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: tag.color.withOpacity(0.3)),
+          border: Border.all(color: tag.color.withOpacity(0.5)),
         ),
         child: Row(
           children: [
@@ -112,8 +112,13 @@ class _TagManageScreenState extends State<TagManageScreen> {
             Expanded(
               child: Text(
                 tag.name,
-                style: TextStyle(color: tag.color, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: tag.color, fontSize: 14, fontWeight: FontWeight.w500),
               ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete_outline, color: tag.color.withOpacity(0.7), size: 20),
+              onPressed: () => _deleteTag(tag),
+              tooltip: '태그 삭제',
             ),
           ],
         ),
@@ -188,11 +193,11 @@ class _TagManageScreenState extends State<TagManageScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Text(title, style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 16)),
-        content: Text(message, style: const TextStyle(color: Color(0xFFC9B8A3), fontSize: 14)),
+        title: Text(title, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 16, fontWeight: FontWeight.bold)),
+        content: Text(message, style: const TextStyle(color: Color(0xFF5D4037), fontSize: 14)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false),
-            child: Text('취소', style: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5)))),
+            child: Text('취소', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.6)))),
           TextButton(onPressed: () => Navigator.pop(context, true),
             child: const Text('삭제', style: TextStyle(color: Color(0xFFB85C3A)))),
         ],

@@ -250,22 +250,23 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? tag.color : const Color(0xFF3D3328),
+          color: const Color(0xFF3D3328),
           borderRadius: BorderRadius.circular(14),
+          border: isSelected ? Border.all(color: tag.color, width: 1.5) : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
-              const Icon(Icons.check, color: Color(0xFF1A1612), size: 14),
+              Icon(Icons.check, color: tag.color, size: 14),
               const SizedBox(width: 4),
             ],
             Text(
               tag.name,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF1A1612) : const Color(0xFFC9B8A3),
+                color: isSelected ? tag.color : const Color(0xFFC9B8A3),
                 fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],
