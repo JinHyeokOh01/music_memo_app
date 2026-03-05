@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
 class SummaryView extends StatelessWidget {
@@ -14,14 +15,14 @@ class SummaryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(color: Color(0xFFD4A574)),
-            SizedBox(height: 16),
-            Text('요약을 생성하고 있어요...', style: TextStyle(color: Color(0xFF795548))),
-            Text('GPT-4o-mini가 연습 기록을 분석 중입니다.', style: TextStyle(color: Color(0xFFA1887F), fontSize: 12)),
+            const CircularProgressIndicator(color: Color(0xFF800020)),
+            const SizedBox(height: 16),
+            Text('Generating summary...', style: GoogleFonts.inter(color: const Color(0xFF888888))),
+            Text('GPT is analyzing your practice sessions.', style: GoogleFonts.inter(color: const Color(0xFF666666), fontSize: 12)),
           ],
         ),
       );
@@ -30,8 +31,8 @@ class SummaryView extends StatelessWidget {
     if (content.isEmpty) {
       return Center(
         child: Text(
-          '요약할 내용이 없어요.',
-          style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
+          'Nothing to summarize.',
+          style: GoogleFonts.inter(color: const Color(0xFF888888)),
         ),
       );
     }
@@ -39,20 +40,20 @@ class SummaryView extends StatelessWidget {
     return MarkdownWidget(
       data: content,
       shrinkWrap: false,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
       config: MarkdownConfig(
         configs: [
-          const PConfig(
-            textStyle: TextStyle(fontSize: 16, height: 1.6, color: Color(0xFF4E342E)),
+          PConfig(
+            textStyle: GoogleFonts.inter(fontSize: 15, height: 1.6, color: const Color(0xFFE0E0E0)),
           ),
-          const H1Config(
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4E342E)),
+          H1Config(
+            style: GoogleFonts.inter(fontSize: 26, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.5),
           ),
-          const H2Config(
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF5D4037)),
+          H2Config(
+            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: -0.5),
           ),
-          const H3Config(
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF6D4C41)),
+          H3Config(
+            style: GoogleFonts.inter(fontSize: 19, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: -0.5),
           ),
           const ListConfig(
             marginLeft: 8,

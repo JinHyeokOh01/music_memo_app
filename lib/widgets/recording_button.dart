@@ -23,12 +23,12 @@ class RecordingButton extends StatelessWidget {
           onTap: onPressed,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: isRecording ? 72 : 64,
-            height: isRecording ? 72 : 64,
+            width: 64,
+            height: 64,
             decoration: BoxDecoration(
               color: isRecording
-                  ? const Color(0xFFD32F2F) // 녹음 중: 웜 레드
-                  : Theme.of(context).primaryColor, // 녹음 대기: 웜 브라운
+                  ? const Color(0xFFE53935)
+                  : const Color(0xFF800020),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -39,13 +39,13 @@ class RecordingButton extends StatelessWidget {
                         Icons.stop_rounded,
                         key: ValueKey('stop'),
                         color: Colors.white,
-                        size: 32,
+                        size: 28,
                       )
                     : const Icon(
                         Icons.mic,
                         key: ValueKey('mic'),
                         color: Colors.white,
-                        size: 28,
+                        size: 26,
                       ),
               ),
             ),

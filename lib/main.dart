@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'models/summary.dart';
@@ -41,73 +42,120 @@ class MusicMemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Music Memo',
+      title: 'Musician Notes',
       debugShowCheckedModeBanner: false,
 
-      // 브라운 우드 톤 테마 설정
+      // 다크 모드 미니멀리스트 테마 (V3)
       theme: ThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFFDFCF8), // 밝은 웜 베이지 배경
-        primaryColor: const Color(0xFF8D6E63), // 웜 브라운
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF1A1A1A), // 딥 차콜 그레이 배경
+        primaryColor: const Color(0xFF800020), // 딥 버건디 (마이크 등 주요 액센트)
+        canvasColor: const Color(0xFF1A1A1A),
 
         // 컬러 스킴
-        colorScheme: const ColorScheme.light(
-          primary: Color(0xFF8D6E63),
-          secondary: Color(0xFFD7CCC8),
-          surface: Color(0xFFF5F1E6), // 카드 배경 (약간 더 진한 베이지)
-          onSurface: Color(0xFF4E342E), // 기본 텍스트
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF800020), // 딥 버건디
+          secondary: Color(0xFFC5A059), // 뮤트 골드 (펜 가디언 등 서브 액센트)
+          surface: Color(0xFF242424), // 카드 배경 (오프 블랙)
+          onSurface: Colors.white, // 순백색 텍스트
+          onPrimary: Colors.white,
         ),
 
         // 앱바 테마
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFFDFCF8),
+          backgroundColor: Color(0xFF1A1A1A),
           elevation: 0,
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Color(0xFF4E342E)),
+          centerTitle: false,
+          titleSpacing: 24,
+          iconTheme: IconThemeData(color: Colors.white),
           titleTextStyle: TextStyle(
-            color: Color(0xFF4E342E),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Inter',
           ),
         ),
 
-        // 텍스트 테마
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            color: Color(0xFF4E342E), // 다크 브라운
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
+        // 텍스트 테마 (Inter + NotoSansKR)
+        textTheme: TextTheme(
+          headlineLarge: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
           ),
-          bodyLarge: TextStyle(
-            color: Color(0xFF4E342E),
-            fontSize: 16,
-          ),
-          bodyMedium: TextStyle(
-            color: Color(0xFF795548), // 미디엄 브라운
-            fontSize: 14,
-          ),
-          titleMedium: TextStyle(
-            color: Color(0xFF4E342E),
-            fontSize: 16,
+          headlineMedium: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 24,
             fontWeight: FontWeight.w600,
           ),
+          titleLarge: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+          bodyLarge: GoogleFonts.notoSansKr(
+            color: Colors.white,
+            fontSize: 16,
+            height: 1.5,
+          ),
+          bodyMedium: GoogleFonts.notoSansKr(
+            color: const Color(0xFFE0E0E0), // 약간 부드러운 화이트
+            fontSize: 14,
+            height: 1.5,
+          ),
         ),
 
-        // 입력 필드 테마
+        // 입력 필드 테마 (검색바 등)
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFFF5F1E6), // 입력란 배경 (Surface와 동일하거나 비슷하게)
+          fillColor: const Color(0xFF2A2A2A), // 검색창 배경 등
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none,
           ),
-          hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Color(0xFFC5A059), width: 1.5), // 포커스 시 골드
+          ),
+          hintStyle: GoogleFonts.notoSansKr(
+            color: const Color(0xFF888888),
+            fontSize: 15,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         ),
 
         // 아이콘 테마
         iconTheme: const IconThemeData(
-          color: Color(0xFF795548),
+          color: Colors.white,
+          size: 24,
+        ),
+        
+        // 카드 테마
+        cardTheme: CardTheme(
+          color: const Color(0xFF242424),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          margin: EdgeInsets.zero,
+        ),
+        
+        // 버튼 테마
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF800020),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            textStyle: GoogleFonts.notoSansKr(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
 

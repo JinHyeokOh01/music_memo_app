@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/tag.dart';
 
 /// 태그 관리 화면 - 태그만 관리
@@ -28,21 +29,65 @@ class _TagManageScreenState extends State<TagManageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left, color: Theme.of(context).primaryColor, size: 28),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('태그 관리', style: TextStyle(color: Color(0xFF4E342E), fontSize: 17, fontWeight: FontWeight.w600)),
-        centerTitle: true,
-      ),
-      body: Column(
+      backgroundColor: const Color(0xFF1A1A1A),
+      body: Stack(
         children: [
-          _buildAddButton(),
-          Expanded(child: _buildTagList()),
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.25,
+              child: Image.asset(
+                'assets/images/bg_texture.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF1A1A1A).withOpacity(0.7),
+                    const Color(0xFF1A1A1A),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(),
+                _buildAddButton(),
+                Expanded(child: _buildTagList()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left_rounded, color: Color(0xFF888888), size: 32),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Manage Tags',
+            style: GoogleFonts.inter(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
         ],
       ),
     );
@@ -50,21 +95,29 @@ class _TagManageScreenState extends State<TagManageScreen> {
 
   Widget _buildAddButton() {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: GestureDetector(
         onTap: _createTag,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
+            color: Colors.white.withOpacity(0.04), // frosted glass
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add, color: Color(0xFF8D6E63), size: 18),
+              const Icon(Icons.add_rounded, color: Color(0xFF888888), size: 20),
               const SizedBox(width: 8),
-              const Text('태그 추가', style: TextStyle(color: Color(0xFF8D6E63), fontSize: 15, fontWeight: FontWeight.w500)),
+              Text(
+                'Add New Tag',
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF888888),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
@@ -75,12 +128,13 @@ class _TagManageScreenState extends State<TagManageScreen> {
   Widget _buildTagList() {
     if (_tags.isEmpty) {
       return Center(
-        child: Text('등록된 태그가 없어요', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5))),
+        child: Text('No tags yet.', style: GoogleFonts.inter(color: const Color(0xFF888888))),
       );
     }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
+      physics: const BouncingScrollPhysics(),
       itemCount: _tags.length + 1,
       itemBuilder: (context, index) {
         if (index == _tags.length) return const SizedBox(height: 80);
@@ -94,31 +148,31 @@ class _TagManageScreenState extends State<TagManageScreen> {
     return GestureDetector(
       onLongPress: () => _showTagOptions(tag),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: tag.color.withOpacity(0.5)),
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Row(
           children: [
             Container(
-              width: 10,
-              height: 10,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(color: tag.color, shape: BoxShape.circle),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 tag.name,
-                  style: TextStyle(color: tag.color, fontSize: 14, fontWeight: FontWeight.w500),
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.delete_outline, color: tag.color.withOpacity(0.7), size: 20),
+              icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFE53935), size: 20),
               onPressed: () => _deleteTag(tag),
-              tooltip: '태그 삭제',
+              tooltip: 'Delete',
             ),
           ],
         ),
@@ -140,22 +194,22 @@ class _TagManageScreenState extends State<TagManageScreen> {
   void _showTagOptions(Tag tag) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(width: 36, height: 4, margin: const EdgeInsets.only(top: 8, bottom: 16),
-              decoration: BoxDecoration(color: const Color(0xFF795548).withOpacity(0.4), borderRadius: BorderRadius.circular(2))),
+              decoration: BoxDecoration(color: const Color(0xFF555555), borderRadius: BorderRadius.circular(2))),
             ListTile(
-              leading: const Icon(Icons.edit_outlined, color: Color(0xFF795548)),
-              title: const Text('편집', style: TextStyle(color: Color(0xFF4E342E))),
+              leading: const Icon(Icons.edit_rounded, color: Colors.white),
+              title: Text('Edit', style: GoogleFonts.inter(color: Colors.white)),
               onTap: () { Navigator.pop(context); _editTag(tag); },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline, color: Color(0xFFD32F2F)),
-              title: const Text('삭제', style: TextStyle(color: Color(0xFFD32F2F))),
+              leading: const Icon(Icons.delete_outline_rounded, color: Color(0xFFE53935)),
+              title: Text('Delete', style: GoogleFonts.inter(color: const Color(0xFFE53935))),
               onTap: () { Navigator.pop(context); _deleteTag(tag); },
             ),
             const SizedBox(height: 8),
@@ -180,7 +234,7 @@ class _TagManageScreenState extends State<TagManageScreen> {
   }
 
   Future<void> _deleteTag(Tag tag) async {
-    final confirm = await _showConfirm('태그 삭제', '"${tag.name}" 태그를 삭제할까요?');
+    final confirm = await _showConfirm('Delete Tag', 'Are you sure you want to delete "${tag.name}"?');
     if (confirm) {
       setState(() => _tags.removeWhere((t) => t.id == tag.id));
       widget.onTagsChanged(_tags);
@@ -191,15 +245,18 @@ class _TagManageScreenState extends State<TagManageScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Text(title, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 16, fontWeight: FontWeight.bold)),
-        content: Text(message, style: const TextStyle(color: Color(0xFF5D4037), fontSize: 14)),
+        backgroundColor: const Color(0xFF2A2A2A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+        ),
+        title: Text(title, style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        content: Text(message, style: GoogleFonts.inter(color: const Color(0xFFCCCCCC), fontSize: 14)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false),
-            child: Text('취소', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.6)))),
+            child: Text('Cancel', style: GoogleFonts.inter(color: const Color(0xFF888888)))),
           TextButton(onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제', style: TextStyle(color: Color(0xFFB85C3A)))),
+            child: Text('Delete', style: GoogleFonts.inter(color: const Color(0xFFE53935)))),
         ],
       ),
     );
@@ -230,56 +287,60 @@ class _TagDialogState extends State<_TagDialog> {
   Widget build(BuildContext context) {
     final isEdit = widget.tag != null;
     return Dialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      backgroundColor: const Color(0xFF2A2A2A),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Colors.white.withOpacity(0.05)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isEdit ? '태그 편집' : '태그 추가', style: const TextStyle(color: Color(0xFF4E342E), fontSize: 17, fontWeight: FontWeight.w600)),
+            Text(isEdit ? 'Edit Tag' : 'New Tag', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
             TextField(
               controller: _ctrl,
               autofocus: true,
-              style: const TextStyle(color: Color(0xFF4E342E), fontSize: 15),
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
               decoration: InputDecoration(
-                hintText: '태그 이름',
-                hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
+                hintText: 'Tag Name',
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF666666)),
                 filled: true,
-                fillColor: Theme.of(context).inputDecorationTheme.fillColor,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                fillColor: const Color(0xFF1A1A1A),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
-            const SizedBox(height: 14),
-            Text('색상', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.7), fontSize: 12)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
+            Text('Color', style: GoogleFonts.inter(color: const Color(0xFF888888), fontSize: 13)),
+            const SizedBox(height: 10),
             Wrap(
-              spacing: 10,
+              spacing: 12,
               runSpacing: 12,
               children: Tag.defaultColors.map((c) {
                 final sel = _color == c;
                 return GestureDetector(
                   onTap: () => setState(() => _color = c),
                   child: Container(
-                    width: 32, height: 32,
+                    width: 36, height: 36,
                     decoration: BoxDecoration(
                       color: c,
                       shape: BoxShape.circle,
-                      border: Border.all(color: sel ? const Color(0xFF4E342E) : Colors.transparent, width: 2),
+                      border: Border.all(color: sel ? Colors.white : Colors.transparent, width: 2),
+                      boxShadow: sel ? [BoxShadow(color: c.withOpacity(0.4), blurRadius: 8)] : null,
                     ),
                   ),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('취소', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5))),
+                  child: Text('Cancel', style: GoogleFonts.inter(color: const Color(0xFF888888))),
                 )),
                 Expanded(child: TextButton(
                   onPressed: () {
@@ -292,7 +353,7 @@ class _TagDialogState extends State<_TagDialog> {
                       isPinned: widget.tag?.isPinned ?? false,
                     ));
                   },
-                  child: Text(isEdit ? '저장' : '추가', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600)),
+                  child: Text(isEdit ? 'Save' : 'Add', style: GoogleFonts.inter(color: const Color(0xFFC5A059), fontWeight: FontWeight.w600)),
                 )),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/summary.dart';
 import '../services/summary_service.dart';
@@ -94,18 +95,17 @@ class _SummaryScreenState extends State<SummaryScreen> with SingleTickerProvider
   }
 
   String _getDateRangeString() {
-    final dateFormat = DateFormat('M월 d일 (E)', 'ko');
     switch (_tabController.index) {
       case 0:
-        return dateFormat.format(_selectedDate);
+        return DateFormat('MMM d, yyyy').format(_selectedDate);
       case 1:
         // Weekly range logic (Monday to Sunday)
         final diff = _selectedDate.weekday - 1;
         final start = _selectedDate.subtract(Duration(days: diff));
         final end = start.add(const Duration(days: 6));
-        return '${DateFormat('M.d').format(start)} ~ ${DateFormat('M.d').format(end)}';
+        return '${DateFormat('MMM d').format(start)} - ${DateFormat('MMM d').format(end)}';
       case 2:
-        return DateFormat('yyyy년 M월').format(_selectedDate);
+        return DateFormat('MMMM yyyy').format(_selectedDate);
       default:
         return '';
     }
@@ -121,24 +121,30 @@ class _SummaryScreenState extends State<SummaryScreen> with SingleTickerProvider
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D241F),
-        title: const Text('OpenAI API Key 설정', style: TextStyle(color: Color(0xFFF5E6D3))),
+        backgroundColor: const Color(0xFF2A2A2A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+        ),
+        title: Text('OpenAI API Key', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              '요약 기능을 사용하려면 OpenAI API Key가 필요합니다. 키는 로컬에 안전하게 저장됩니다.',
-              style: TextStyle(color: Color(0xFFC9B8A3), fontSize: 13),
+            Text(
+              'An API key is required to generate summaries. Your key is securely stored locally.',
+              style: GoogleFonts.inter(color: const Color(0xFF888888), fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+              decoration: InputDecoration(
                 hintText: 'sk-...',
-                hintStyle: TextStyle(color: Colors.grey),
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF666666)),
                 filled: true,
-                fillColor: Color(0xFF3E3129),
+                fillColor: const Color(0xFF1A1A1A),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
           ],
@@ -146,17 +152,16 @@ class _SummaryScreenState extends State<SummaryScreen> with SingleTickerProvider
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소', style: TextStyle(color: Colors.grey)),
+            child: Text('Cancel', style: GoogleFonts.inter(color: const Color(0xFF888888))),
           ),
           TextButton(
             onPressed: () async {
               await widget.openAIService.setApiKey(controller.text.trim());
-              if (mounted) {
-                Navigator.pop(context);
-                _loadSummary(); // Retry loading with new key
-              }
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              _loadSummary(); // Retry loading with new key
             },
-            child: const Text('저장', style: TextStyle(color: Color(0xFFD4A574))),
+            child: Text('Save', style: GoogleFonts.inter(color: const Color(0xFFC5A059), fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -176,62 +181,61 @@ class _SummaryScreenState extends State<SummaryScreen> with SingleTickerProvider
         // 상단 바 (날짜 이동 & 설정)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Colors.transparent,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.chevron_left),
+                icon: const Icon(Icons.chevron_left_rounded),
                 onPressed: _isLoading ? null : () => _changeDate(-1),
-                color: const Color(0xFF795548),
+                color: const Color(0xFF888888),
               ),
               Expanded(
                 child: Text(
                   _getDateRangeString(),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4E342E),
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right),
+                icon: const Icon(Icons.chevron_right_rounded),
                 onPressed: _isLoading ? null : () => _changeDate(1),
-                color: const Color(0xFF795548),
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: _showApiKeyDialog,
-                color: const Color(0xFF795548),
+                color: const Color(0xFF888888),
               ),
             ],
           ),
         ),
 
-        // 탭 바
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
-            color: const Color(0xFFEFEBE0),
-            borderRadius: BorderRadius.circular(25),
+            color: Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: TabBar(
             controller: _tabController,
-            indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Theme.of(context).primaryColor,
-            ),
+            labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+            indicatorColor: Colors.transparent,
             indicatorSize: TabBarIndicatorSize.tab,
+            indicator: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(30),
+            ),
             labelColor: Colors.white,
-            unselectedLabelColor: const Color(0xFF795548),
+            unselectedLabelColor: const Color(0xFF888888),
             dividerColor: Colors.transparent,
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
             tabs: const [
-              Tab(text: '일간'),
-              Tab(text: '주간'),
-              Tab(text: '월간'),
+              Tab(text: 'Daily'),
+              Tab(text: 'Weekly'),
+              Tab(text: 'Monthly'),
             ],
           ),
         ),
@@ -252,26 +256,32 @@ class _SummaryScreenState extends State<SummaryScreen> with SingleTickerProvider
                         Text(
                           _errorMessage!,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: const Color(0xFF795548).withOpacity(0.8)),
+                          style: const TextStyle(color: Color(0xFF888888)),
                         ),
                         const SizedBox(height: 24),
-                        if (_errorMessage!.contains('API Key') || _errorMessage!.contains('429')) // 429 에러도 키 설정 버튼 나오게 수정
+                        if (_errorMessage!.contains('API Key') || _errorMessage!.contains('429'))
                           ElevatedButton(
                             onPressed: _showApiKeyDialog,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).primaryColor,
+                              backgroundColor: const Color(0xFF800020),
                               foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             ),
-                            child: const Text('API Key 설정하기'),
+                            child: Text('Set API Key', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                           )
                         else
                           ElevatedButton(
                             onPressed: _loadSummary,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD4A574),
+                              backgroundColor: Colors.white.withOpacity(0.1),
                               foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             ),
-                            child: const Text('다시 시도'),
+                            child: Text('Retry', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                           ),
                       ],
                     ),

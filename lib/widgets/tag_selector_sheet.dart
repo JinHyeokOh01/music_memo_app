@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/tag.dart';
 
 /// 태그 선택 시트 - 간단한 버전
@@ -78,9 +79,10 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
-      decoration: const BoxDecoration(
-        color: Color(0xFF2D241F),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         children: [
@@ -88,40 +90,40 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
           Container(
             width: 36,
             height: 4,
-            margin: const EdgeInsets.only(top: 8),
+            margin: const EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFC9B8A3).withOpacity(0.4),
+              color: const Color(0xFF555555),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
 
           // 헤더
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
             child: Row(
               children: [
                 Text(
-                  '태그 선택',
-                  style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 17, fontWeight: FontWeight.w600),
+                  'Select Tags',
+                  style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 if (_selected.isNotEmpty) ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4A574),
+                      color: const Color(0xFFC5A059),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '${_selected.length}',
-                      style: const TextStyle(color: Color(0xFF1A1612), fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(color: const Color(0xFF1A1A1A), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Text('완료', style: TextStyle(color: Color(0xFFD4A574), fontSize: 16, fontWeight: FontWeight.w500)),
+                  child: Text('Done', style: GoogleFonts.inter(color: const Color(0xFFC5A059), fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
@@ -129,18 +131,18 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
 
           // 검색
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchCtrl,
-              style: const TextStyle(color: Color(0xFFF5E6D3), fontSize: 14),
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
               decoration: InputDecoration(
-                hintText: '태그 검색...',
-                hintStyle: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5)),
-                prefixIcon: Icon(Icons.search, color: const Color(0xFFC9B8A3).withOpacity(0.6), size: 18),
+                hintText: 'Search tags...',
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF666666)),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF888888), size: 18),
                 filled: true,
-                fillColor: const Color(0xFF3D3328),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                fillColor: Colors.white.withOpacity(0.04),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 isDense: true,
               ),
               onChanged: (v) => setState(() => _searchQuery = v),
@@ -172,17 +174,17 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('검색 결과 없음', style: TextStyle(color: const Color(0xFFC9B8A3).withOpacity(0.5))),
-            const SizedBox(height: 12),
+            Text('No results found', style: GoogleFonts.inter(color: const Color(0xFF888888))),
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: () => _createTag(_searchQuery),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD4A574),
-                  borderRadius: BorderRadius.circular(16),
+                  color: const Color(0xFFC5A059).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text('"$_searchQuery" 만들기', style: const TextStyle(color: Color(0xFF1A1612), fontSize: 14)),
+                child: Text('Create "$_searchQuery"', style: GoogleFonts.inter(color: const Color(0xFFC5A059), fontSize: 14, fontWeight: FontWeight.w600)),
               ),
             ),
           ],
@@ -208,37 +210,37 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
       children: [
         // 선택된 태그
         if (_selected.isNotEmpty) ...[
-          _buildSection('선택됨'),
+          _buildSection('Selected'),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 12,
+            runSpacing: 12,
             children: _selected
                 .map((id) => widget.tags.firstWhere((t) => t.id == id, orElse: () => widget.tags.first))
                 .where((t) => widget.tags.contains(t))
                 .map((tag) => _buildTagChip(tag))
                 .toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
         ],
 
         // 전체 태그
-        _buildSection('전체'),
+        _buildSection('All Tags'),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 12,
+          runSpacing: 12,
           children: widget.tags.map((tag) => _buildTagChip(tag)).toList(),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 40),
       ],
     );
   }
 
   Widget _buildSection(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 12, top: 4),
       child: Text(
         title,
-        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12, fontWeight: FontWeight.w500),
+        style: GoogleFonts.inter(color: const Color(0xFF666666), fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.5),
       ),
     );
   }
@@ -247,26 +249,33 @@ class _TagSelectorContentState extends State<_TagSelectorContent> {
     final isSelected = _selected.contains(tag.id);
     return GestureDetector(
       onTap: () => _toggle(tag.id),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF3D3328),
-          borderRadius: BorderRadius.circular(14),
-          border: isSelected ? Border.all(color: tag.color, width: 1.5) : null,
+          color: isSelected ? tag.color.withOpacity(0.15) : Colors.white.withOpacity(0.04),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? tag.color.withOpacity(0.5) : Colors.white.withOpacity(0.05)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
               Icon(Icons.check, color: tag.color, size: 14),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
+            ] else ...[
+              Container(
+                width: 8, height: 8,
+                decoration: BoxDecoration(color: tag.color.withOpacity(0.5), shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
             ],
             Text(
               tag.name,
-              style: TextStyle(
-                color: isSelected ? tag.color : const Color(0xFFC9B8A3),
+              style: GoogleFonts.inter(
+                color: isSelected ? tag.color : Colors.white.withOpacity(0.8),
                 fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
           ],

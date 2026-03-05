@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:intl/intl.dart';
 import '../models/recording.dart';
@@ -170,20 +171,6 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
     });
   }
 
-  void _removeItem(int index) {
-    if (_items.length <= 1) {
-      _items[0].controller.clear();
-      _items[0].isChecklist = false;
-      _items[0].isDone = false;
-      setState(() {});
-      return;
-    }
-    final item = _items.removeAt(index);
-    item.controller.dispose();
-    item.focusNode.dispose();
-    setState(() {});
-  }
-
   void _handleItemSubmit(int index) {
     final item = _items[index];
     if (item.isChecklist) {
@@ -220,86 +207,109 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!widget.recording.isMemoOnly) ...[
-                      const SizedBox(height: 16),
-                      _buildMiniPlayer(),
-                      const SizedBox(height: 24),
-                    ] else
-                      const SizedBox(height: 20),
-                    
-                    // 제목
-                    _buildTitleField(),
-                    const SizedBox(height: 16),
-                    
-                    // 콘텐츠 영역 (메모 + 체크리스트)
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 콘텐츠 아이템들
-                          ...List.generate(_items.length, (i) => _buildItem(i)),
-                          
-                          const SizedBox(height: 12),
-                          
-                          // 체크리스트 추가 버튼
-                          _buildAddChecklistButton(),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // 태그
-                    _buildTagSection(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // 날짜 정보
-                    _buildDateInfo(),
-                    
-                    const SizedBox(height: 60),
+      backgroundColor: const Color(0xFF1A1A1A),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.25,
+              child: Image.asset(
+                'assets/images/bg_texture.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF1A1A1A).withOpacity(0.7),
+                    const Color(0xFF1A1A1A),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildTopBar(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!widget.recording.isMemoOnly) ...[
+                          const SizedBox(height: 16),
+                          _buildMiniPlayer(),
+                          const SizedBox(height: 24),
+                        ] else
+                          const SizedBox(height: 20),
+                        
+                        // 제목
+                        _buildTitleField(),
+                        const SizedBox(height: 16),
+                        
+                        // 콘텐츠 영역 (메모 + 체크리스트)
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.03),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: Colors.white.withOpacity(0.05)),
+                          ),
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...List.generate(_items.length, (i) => _buildItem(i)),
+                              const SizedBox(height: 12),
+                              _buildAddChecklistButton(),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 24),
+                        _buildTagSection(),
+                        const SizedBox(height: 24),
+                        _buildDateInfo(),
+                        const SizedBox(height: 60),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTopBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
           IconButton(
             onPressed: _save,
-            icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).primaryColor, size: 22),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFC5A059), size: 20),
           ),
           const Spacer(),
           TextButton(
             onPressed: _save,
             child: Text(
-              '완료',
-              style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 17, fontWeight: FontWeight.w600),
+              'Done',
+              style: GoogleFonts.inter(
+                color: const Color(0xFFC5A059),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -315,8 +325,9 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
         children: [
@@ -325,8 +336,8 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
             child: Container(
               width: 48,
               height: 48,
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),
-              child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 26),
+              decoration: const BoxDecoration(color: Color(0xFF800020), shape: BoxShape.circle),
+              child: Icon(_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white, size: 28),
             ),
           ),
           const SizedBox(width: 14),
@@ -337,8 +348,8 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
                   borderRadius: BorderRadius.circular(2),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    valueColor: const AlwaysStoppedAnimation(Color(0xFF800020)),
                     minHeight: 4,
                   ),
                 ),
@@ -346,8 +357,8 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_formatDuration(_position), style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5), fontSize: 12)),
-                    Text(_formatDuration(widget.recording.duration), style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5), fontSize: 12)),
+                    Text(_formatDuration(_position), style: TextStyle(color: const Color(0xFF888888), fontSize: 12)),
+                    Text(_formatDuration(widget.recording.duration), style: TextStyle(color: const Color(0xFF888888), fontSize: 12)),
                   ],
                 ),
               ],
@@ -361,19 +372,27 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
   Widget _buildTitleField() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.transparent, // 투명 배경 (깔끔하게)
+        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.1), width: 1)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
       child: TextField(
         controller: _titleController,
-        style: const TextStyle(color: Color(0xFF4E342E), fontSize: 22, fontWeight: FontWeight.bold),
+        style: GoogleFonts.inter(
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          letterSpacing: -0.5,
+        ),
         decoration: InputDecoration(
           hintText: _getDefaultTitle(),
-          hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
+          hintStyle: const TextStyle(color: Color(0xFF666666)),
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           contentPadding: EdgeInsets.zero,
           isDense: true,
+          fillColor: Colors.transparent,
         ),
         maxLines: null,
       ),
@@ -398,13 +417,13 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: item.isDone ? Theme.of(context).primaryColor : const Color(0xFF795548).withOpacity(0.4),
+                    color: item.isDone ? const Color(0xFFC5A059) : Colors.white.withOpacity(0.3),
                     width: 2,
                   ),
-                  color: item.isDone ? Theme.of(context).primaryColor : Colors.transparent,
+                  color: item.isDone ? const Color(0xFFC5A059) : Colors.transparent,
                 ),
                 child: item.isDone
-                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                    ? const Icon(Icons.check, size: 14, color: Color(0xFF1A1A1A))
                     : null,
               ),
             ),
@@ -412,16 +431,16 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
             child: TextField(
               controller: item.controller,
               focusNode: item.focusNode,
-              style: TextStyle(
-                color: const Color(0xFF4E342E),
-                fontSize: 17,
-                height: 1.4,
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+                height: 1.5,
                 decoration: item.isDone ? TextDecoration.lineThrough : TextDecoration.none,
-                decorationColor: const Color(0xFF795548).withOpacity(0.6),
+                decorationColor: const Color(0xFF888888),
               ),
               decoration: InputDecoration(
                 hintText: item.isChecklist ? '할 일' : '메모',
-                hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
+                hintStyle: const TextStyle(color: Color(0xFF666666)),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 4),
@@ -446,14 +465,14 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
             height: 24,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF795548).withOpacity(0.3), width: 1.5),
+              border: Border.all(color: const Color(0xFF666666), width: 1.5),
             ),
-            child: Icon(Icons.add, size: 14, color: const Color(0xFF795548).withOpacity(0.5)),
+            child: const Icon(Icons.add, size: 14, color: Color(0xFF888888)),
           ),
           const SizedBox(width: 10),
-          Text(
+          const Text(
             '체크리스트 추가',
-            style: TextStyle(color: const Color(0xFF795548).withOpacity(0.6), fontSize: 15),
+            style: TextStyle(color: Color(0xFF888888), fontSize: 15),
           ),
         ],
       ),
@@ -475,9 +494,8 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: tag.color.withOpacity(0.5)),
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -494,15 +512,16 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Theme.of(context).inputDecorationTheme.fillColor,
+              color: Colors.white.withOpacity(0.03),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.add, color: const Color(0xFF795548).withOpacity(0.5), size: 16),
+                const Icon(Icons.add, color: Color(0xFF888888), size: 16),
                 const SizedBox(width: 4),
-                Text('태그', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5), fontSize: 14)),
+                Text('Add Tag', style: GoogleFonts.inter(color: const Color(0xFF888888), fontSize: 13)),
               ],
             ),
           ),
@@ -518,7 +537,7 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
 
     return Text(
       '${widget.recording.isMemoOnly ? '작성' : '녹음'} $dateStr${widget.recording.isMemoOnly ? '' : ' · ${widget.recording.durationString}'}',
-      style: TextStyle(color: const Color(0xFF795548).withOpacity(0.5), fontSize: 12),
+      style: const TextStyle(color: Color(0xFF666666), fontSize: 13, fontFamily: 'Inter'),
     );
   }
 }

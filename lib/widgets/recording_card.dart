@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/recording.dart';
 import '../models/tag.dart';
 
@@ -31,7 +32,6 @@ class RecordingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMemoOnly = recording.isMemoOnly;
-    final memoPreview = _buildMemoPreview(displayMemo, recording);
     return Dismissible(
       key: Key(recording.id),
       direction: DismissDirection.horizontal,
@@ -50,8 +50,8 @@ class RecordingCard extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
-          color: recording.isPinned ? const Color(0xFF5D4037) : Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(12),
+          color: recording.isPinned ? const Color(0xFFC5A059) : const Color(0xFF444444),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -72,8 +72,8 @@ class RecordingCard extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xFFE53935), // 더 강렬한 레드
+          borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
@@ -81,101 +81,84 @@ class RecordingCard extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
             children: [
-              // 재생 버튼
-              if (isMemoOnly)
-                _MemoIcon()
-              else
-                _PlayButton(
-                  isPlaying: isPlaying,
-                  onTap: onPlayTap,
+              // 아이콘 (재생/정지 또는 메모)
+              GestureDetector(
+                onTap: isMemoOnly ? null : onPlayTap,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: isMemoOnly 
+                        ? const Color(0xFFC5A059).withOpacity(0.15) 
+                        : const Color(0xFF800020).withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isMemoOnly
+                        ? Icons.edit_rounded
+                        : (isPlaying ? Icons.pause_rounded : Icons.graphic_eq_rounded),
+                    color: isMemoOnly ? const Color(0xFFC5A059) : const Color(0xFFE53935), // 버건디/레드 혹은 골드
+                    size: 16,
+                  ),
                 ),
+              ),
               const SizedBox(width: 12),
 
-              // 녹음 정보
+              // 콘텐츠 (제목 + 첫번째 태그 일부)
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    // 제목 & 시간
-                    Row(
-                      children: [
-                        Text(
-                          recording.displayTitle,
-                          style: const TextStyle(
-                            color: Color(0xFF4E342E),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                    Flexible(
+                      child: Text(
+                        recording.displayTitle,
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
-                        const SizedBox(width: 8),
-                        if (isMemoOnly)
-                          Text(
-                            '메모',
-                            style: TextStyle(
-                              color: const Color(0xFF795548).withOpacity(0.6),
-                              fontSize: 13,
-                            ),
-                          )
-                        else
-                          Text(
-                            recording.durationString,
-                            style: TextStyle(
-                              color: const Color(0xFF795548).withOpacity(0.7),
-                              fontSize: 14,
-                            ),
-                          ),
-                      ],
-                    ),
-
-                    // 메모
-                    if (memoPreview.text.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      ...memoPreview.lines.map((line) => _buildMemoLine(line, context)),
-                    ],
-
-                    // 태그들
-                    if (recording.tags.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
-                        children: recording.tags.map((tagId) {
-                          final tag = tags.firstWhere(
-                            (t) => t.id == tagId,
-                            orElse: () => Tag(
-                              id: tagId,
-                              name: tagId,
-                              color: Colors.grey,
-                            ),
-                          );
-                          return _TagChip(tag: tag);
-                        }).toList(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
 
-              // 삭제 버튼
-              GestureDetector(
-                onTap: () {
-                  onDelete();
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: const Color(0xFF795548).withOpacity(0.5),
-                    size: 20,
+              const SizedBox(width: 8),
+
+              // 시간 (또는 녹음 길이) 및 삭제 버튼
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!isMemoOnly) ...[
+                    Text(
+                      recording.durationString,
+                      style: const TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 13,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  GestureDetector(
+                    onTap: onDelete,
+                    child: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Color(0xFF666666),
+                      size: 18,
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -184,203 +167,4 @@ class RecordingCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMemoLine(_MemoLine line, BuildContext context) {
-    if (line.isChecklist) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Checkbox(
-            value: line.isDone,
-            activeColor: Theme.of(context).primaryColor,
-            checkColor: Colors.white,
-            visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            onChanged: onChecklistToggle == null
-                ? null
-                : (value) => onChecklistToggle?.call(line.toggleIndex, value ?? false),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 6, bottom: 6),
-              child: Text(
-                line.text,
-                style: TextStyle(
-                  color: line.isDone ? const Color(0xFF4E342E).withOpacity(0.4) : const Color(0xFF4E342E),
-                  fontSize: 14,
-                  decoration: line.isDone ? TextDecoration.lineThrough : TextDecoration.none,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        line.text,
-        style: TextStyle(color: const Color(0xFF795548).withOpacity(0.8), fontSize: 14),
-      ),
-    );
-  }
-}
-
-class _MemoIcon extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: Theme.of(context).inputDecorationTheme.fillColor,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        Icons.note_rounded,
-        color: const Color(0xFF795548).withOpacity(0.8),
-        size: 22,
-      ),
-    );
-  }
-}
-
-/// 재생 버튼
-class _PlayButton extends StatelessWidget {
-  final bool isPlaying;
-  final VoidCallback onTap;
-
-  const _PlayButton({
-    required this.isPlaying,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: isPlaying
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).inputDecorationTheme.fillColor,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          isPlaying ? Icons.stop : Icons.play_arrow,
-          color: isPlaying ? Colors.white : const Color(0xFF795548),
-          size: 24,
-        ),
-      ),
-    );
-  }
-}
-
-/// 태그 칩
-class _TagChip extends StatelessWidget {
-  final Tag tag;
-
-  const _TagChip({required this.tag});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: tag.color.withOpacity(0.5),
-          width: 1,
-        ),
-      ),
-      child: Text(
-        tag.name,
-        style: TextStyle(
-          color: tag.color,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-}
-
-class _MemoPreview {
-  final String text;
-  final List<_MemoLine> lines;
-
-  const _MemoPreview({required this.text, required this.lines});
-}
-
-class _MemoLine {
-  final int toggleIndex;
-  final String text;
-  final bool isChecklist;
-  final bool isDone;
-
-  const _MemoLine({
-    required this.toggleIndex,
-    required this.text,
-    required this.isChecklist,
-    required this.isDone,
-  });
-}
-
-_MemoPreview _buildMemoPreview(String memoText, Recording recording) {
-  final memo = memoText.trimRight();
-  final lines = <String>[];
-  final previewLines = <_MemoLine>[];
-  var hasChecklist = false;
-
-  if (memo.isNotEmpty) {
-    final memoLines = memo.split('\n');
-    for (var i = 0; i < memoLines.length; i++) {
-      final line = memoLines[i];
-      final match = Recording.checklistLinePattern.firstMatch(line);
-      if (match != null) {
-        final text = (match.group(2) ?? '').trim();
-        if (text.isEmpty) continue;
-        final mark = (match.group(1) ?? ' ').toLowerCase() == 'x' ? 'x' : ' ';
-        lines.add('- [$mark] $text');
-        previewLines.add(_MemoLine(
-          toggleIndex: i,
-          text: text,
-          isChecklist: true,
-          isDone: mark == 'x',
-        ));
-        hasChecklist = true;
-      } else {
-        final text = line.trim();
-        if (text.isEmpty) continue;
-        lines.add(text);
-        previewLines.add(_MemoLine(
-          toggleIndex: i,
-          text: text,
-          isChecklist: false,
-          isDone: false,
-        ));
-      }
-    }
-  }
-
-  if (!hasChecklist && recording.checklist.isNotEmpty) {
-    for (var i = 0; i < recording.checklist.length; i++) {
-      final item = recording.checklist[i];
-      final text = item.text.trim();
-      if (text.isEmpty) continue;
-      lines.add(Recording.buildChecklistLine(item));
-      previewLines.add(_MemoLine(
-        toggleIndex: -1 - i,
-        text: text,
-        isChecklist: true,
-        isDone: item.isDone,
-      ));
-    }
-    hasChecklist = recording.checklist.isNotEmpty;
-  }
-
-  return _MemoPreview(text: lines.join('\n'), lines: previewLines);
 }

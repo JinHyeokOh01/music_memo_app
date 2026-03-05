@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/summary.dart';
 import '../models/recording.dart';
-import '../models/tag.dart';
 import 'storage_service.dart';
 import 'openai_service.dart';
 

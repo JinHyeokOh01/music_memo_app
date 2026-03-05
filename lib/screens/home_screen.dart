@@ -1,3 +1,5 @@
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -366,76 +368,157 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      // 하단 네비게이션 바 추가
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        backgroundColor: const Color(0xFFFDFCF8),
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: const Color(0xFFD7CCC8),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: '기록'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'AI 요약'),
+      backgroundColor: const Color(0xFF1A1A1A),
+      body: Stack(
+        children: [
+          // Background Texture
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.25, // Extremely subtle
+              child: Image.asset(
+                'assets/images/bg_texture.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF1A1A1A).withOpacity(0.7),
+                    const Color(0xFF1A1A1A),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Main Content
+          SafeArea(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF800020)))
+                : Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeader('Musician Notes'),
+                          _buildTabSwitcher(),
+                          Expanded(
+                            child: IndexedStack(
+                              index: _currentIndex,
+                              children: [
+                                // Tab 0: List
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildTagSelector(),
+                                    Expanded(
+                                      child: _filteredRecordings.isEmpty
+                                          ? _buildEmptyState()
+                                          : _buildRecordingList(),
+                                    ),
+                                    const SizedBox(height: 100), // FAB padding
+                                  ],
+                                ),
+                                // Tab 1: Summary
+                                SummaryScreen(
+                                  summaryService: _summaryService,
+                                  openAIService: _openAIService,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Floating clustered FABs
+                      if (_currentIndex == 0)
+                        Positioned(
+                          bottom: 32,
+                          left: 0,
+                          right: 0,
+                          child: _buildBottomActions(),
+                        ),
+                    ],
+                  ),
+          ),
         ],
       ),
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFFD4A574)))
-            : IndexedStack(
-                index: _currentIndex,
-                children: [
-                  // 1. 기존 기록 탭
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader('나의 체크리스트'),
-                      _buildTagSelector(),
-                      Expanded(
-                        child: _filteredRecordings.isEmpty
-                            ? _buildEmptyState()
-                            : _buildRecordingList(),
-                      ),
-                      _buildBottomActions(),
-                    ],
-                  ),
-                  
-                  // 2. 새로운 요약 탭
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader('연습 분석 리포트'), // 헤더 재사용
-                      Expanded(
-                        child: SummaryScreen(
-                          summaryService: _summaryService,
-                          openAIService: _openAIService,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    );
+  }
+
+  Widget _buildTabSwitcher() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildTabButton(0, 'Library'),
+            _buildTabButton(1, 'AI Summary'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabButton(int index, String label) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            color: isSelected ? Colors.white : const Color(0xFF888888),
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 25, fontWeight: FontWeight.bold)),
-          if (_currentIndex == 0) // 태그 관리 버튼은 기록 탭에서만 표시
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
+          if (_currentIndex == 0)
             GestureDetector(
               onTap: _openTagManageScreen,
               child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(8)),
-                child: const Icon(Icons.settings, color: Color(0xFF795548), size: 20),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.settings_rounded, color: Color(0xFF888888), size: 20),
               ),
             ),
         ],
@@ -445,156 +528,133 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBottomActions() {
     final isDisabled = _isRecording;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: isDisabled ? null : _createMemoEntry,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isDisabled ? const Color(0xFFE0DBD0) : Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: const Color(0xFF795548).withOpacity(isDisabled ? 0.08 : 0.15),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Burgundy Microphone
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF800020).withOpacity(0.4),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
-              child: Icon(
-                Icons.note_alt_rounded,
-                color: isDisabled ? const Color(0xFF795548).withOpacity(0.3) : const Color(0xFF795548),
-                size: 22,
-              ),
-            ),
+            ],
           ),
-          const SizedBox(width: 20),
-          RecordingButton(
+          child: RecordingButton(
             isRecording: _isRecording,
             onPressed: _toggleRecording,
             padding: EdgeInsets.zero,
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 24),
+        // Muted Gold Pen
+        GestureDetector(
+          onTap: isDisabled ? null : _createMemoEntry,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: isDisabled 
+                  ? const Color(0xFF2A2A2A) 
+                  : const Color(0xFFC5A059),
+              shape: BoxShape.circle,
+              boxShadow: [
+                if (!isDisabled)
+                  BoxShadow(
+                    color: const Color(0xFFC5A059).withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+              ],
+            ),
+            child: Icon(
+              Icons.edit_rounded,
+              color: isDisabled ? Colors.white.withOpacity(0.3) : const Color(0xFF1A1A1A),
+              size: 26,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  // ... (나머지 위젯 빌더들은 이름 그대로 유지)
   Widget _buildTagSelector() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 선택된 태그들 + 검색창
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface, // 카드 배경
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 선택된 태그들
-                if (_selectedTagIds.isNotEmpty) ...[
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _selectedTagIds.map((id) {
-                      final tag = _tags.firstWhere((t) => t.id == id, orElse: () => _tags.first);
-                      if (!_tags.any((t) => t.id == id)) return const SizedBox.shrink();
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: tag.color,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(tag.name, style: const TextStyle(color: Color(0xFF4E342E), fontSize: 13, fontWeight: FontWeight.w500)),
-                            const SizedBox(width: 4),
-                            GestureDetector(
-                              onTap: () => _removeTagFilter(id),
-                              child: const Icon(Icons.close, color: Color(0xFF795548), size: 14),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-
-                // 검색 입력
-                Row(
-                  children: [
-                    Icon(Icons.search, color: const Color(0xFF795548).withOpacity(0.5), size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchCtrl,
-                        focusNode: _searchFocus,
-                        style: const TextStyle(color: Color(0xFF4E342E), fontSize: 14),
-                        decoration: InputDecoration(
-                          hintText: '태그 검색 후 엔터로 추가...',
-                          hintStyle: TextStyle(color: const Color(0xFF795548).withOpacity(0.5)),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (v) => setState(() => _searchQuery = v),
-                        onSubmitted: (v) async {
-                          final query = v.trim();
-                          if (query.isEmpty) return;
-
-                          final exact = _findExactTag(query);
-                          if (exact != null) {
-                            if (!_selectedTagIds.contains(exact.id)) {
-                              _addTagFilter(exact.id);
-                            }
-                            _searchCtrl.clear();
-                            setState(() => _searchQuery = '');
-                            return;
-                          }
-
-                          final confirm = await _confirmAddTag(query);
-                          if (confirm && mounted) {
-                            await _createTagFromSearch(query);
-                          }
-                        },
-                      ),
-                    ),
-                    if (_searchQuery.isNotEmpty)
-                      GestureDetector(
+          // Glassmorphic Search Bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              color: Colors.white.withOpacity(0.04), // frosted look Base
+              child: TextField(
+                controller: _searchCtrl,
+                focusNode: _searchFocus,
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  hintText: 'Search tags (e.g., #Beethoven)',
+                  hintStyle: GoogleFonts.inter(color: const Color(0xFF666666)),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF888888), size: 18),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  suffixIcon: _searchQuery.isNotEmpty
+                    ? GestureDetector(
                         onTap: () {
                           _searchCtrl.clear();
                           setState(() => _searchQuery = '');
                         },
-                        child: Icon(Icons.close, color: const Color(0xFF795548).withOpacity(0.6), size: 16),
-                      ),
-                  ],
+                        child: const Icon(Icons.close, color: Color(0xFF666666), size: 16),
+                      )
+                    : null,
                 ),
-              ],
+                onChanged: (v) => setState(() => _searchQuery = v),
+                onSubmitted: (v) async {
+                  final query = v.trim();
+                  if (query.isEmpty) return;
+
+                  final exact = _findExactTag(query);
+                  if (exact != null) {
+                    if (!_selectedTagIds.contains(exact.id)) {
+                      _addTagFilter(exact.id);
+                    }
+                    _searchCtrl.clear();
+                    setState(() => _searchQuery = '');
+                    return;
+                  }
+
+                  final confirm = await _confirmAddTag(query);
+                  if (confirm && mounted) {
+                    await _createTagFromSearch(query);
+                  }
+                },
+              ),
             ),
           ),
 
-          // 검색 결과 드롭다운
+          // Search Results
           if (_searchQuery.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Container(
               constraints: const BoxConstraints(maxHeight: 150),
               decoration: BoxDecoration(
-            color: Theme.of(context).inputDecorationTheme.fillColor,
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: _searchResults.isEmpty
                   ? Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text('검색 결과 없음', style: TextStyle(color: const Color(0xFF795548).withOpacity(0.4), fontSize: 13)),
+                      padding: const EdgeInsets.all(16),
+                      child: Text('검색 결과 없음', style: GoogleFonts.inter(color: const Color(0xFF666666), fontSize: 13)),
                     )
                   : ListView.builder(
                       shrinkWrap: true,
@@ -605,40 +665,110 @@ class _HomeScreenState extends State<HomeScreen> {
                         final isSelected = _selectedTagIds.contains(tag.id);
                         return GestureDetector(
                           onTap: () {
-                            if (!isSelected) {
-                              _addTagFilter(tag.id);
-                              _searchCtrl.clear();
-                              setState(() => _searchQuery = '');
-                            }
+                            if (!isSelected) _addTagFilter(tag.id);
+                            _searchCtrl.clear();
+                            setState(() => _searchQuery = '');
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            color: isSelected ? tag.color.withOpacity(0.1) : Colors.transparent,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            color: isSelected ? Colors.white.withOpacity(0.05) : Colors.transparent,
                             child: Row(
                               children: [
-                                Container(
-                                  width: 10, height: 10,
-                                  decoration: BoxDecoration(color: tag.color, shape: BoxShape.circle),
-                                ),
-                                const SizedBox(width: 10),
+                                Icon(Icons.tag, color: isSelected ? Colors.white : const Color(0xFF666666), size: 16),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     tag.name,
-                                    style: TextStyle(
-                                      color: isSelected ? tag.color : const Color(0xFF4E342E),
+                                    style: GoogleFonts.inter(
+                                      color: isSelected ? Colors.white : const Color(0xFFAAAAAA),
                                       fontSize: 14,
-                                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                     ),
                                   ),
                                 ),
                                 if (isSelected)
-                                  Icon(Icons.check, color: tag.color, size: 16),
+                                  const Icon(Icons.check, color: Colors.white, size: 16),
                               ],
                             ),
                           ),
                         );
                       },
                     ),
+            ),
+          ],
+
+          // Horizontal scrollable tag pills
+          if (_searchQuery.isEmpty) ...[
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => setState(() => _selectedTagIds.clear()),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: _selectedTagIds.isEmpty 
+                            ? Colors.white.withOpacity(0.15) 
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: _selectedTagIds.isEmpty 
+                              ? Colors.white.withOpacity(0.2) 
+                              : Colors.white.withOpacity(0.05)
+                        ),
+                      ),
+                      child: Text(
+                        'All',
+                        style: GoogleFonts.inter(
+                          color: _selectedTagIds.isEmpty ? Colors.white : const Color(0xFF888888),
+                          fontSize: 13,
+                          fontWeight: _selectedTagIds.isEmpty ? FontWeight.w600 : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ..._tags.map((tag) {
+                    final isSelected = _selectedTagIds.contains(tag.id);
+                    return GestureDetector(
+                      onTap: () {
+                        if (isSelected) {
+                          _removeTagFilter(tag.id);
+                        } else {
+                          _addTagFilter(tag.id);
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected 
+                              ? Colors.white.withOpacity(0.15) 
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isSelected 
+                                ? Colors.white.withOpacity(0.2) 
+                                : Colors.white.withOpacity(0.05)
+                          ),
+                        ),
+                        child: Text(
+                          '#${tag.name}',
+                          style: GoogleFonts.inter(
+                            color: isSelected ? Colors.white : const Color(0xFF888888),
+                            fontSize: 13,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
             ),
           ],
         ],
@@ -651,11 +781,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.music_note_outlined, size: 64, color: const Color(0xFF795548).withOpacity(0.15)),
+          Icon(Icons.music_note_rounded, size: 48, color: Colors.white.withOpacity(0.05)),
           const SizedBox(height: 16),
           Text(
-            _selectedTagIds.isNotEmpty ? '조건에 맞는 녹음이 없어요' : '첫 녹음을 시작해보세요',
-            style: TextStyle(color: const Color(0xFF795548).withOpacity(0.4), fontSize: 15),
+            _selectedTagIds.isNotEmpty ? 'No recordings match these tags' : 'Your practice room is quiet',
+            style: GoogleFonts.inter(color: const Color(0xFF666666), fontSize: 14),
           ),
         ],
       ),
@@ -669,38 +799,42 @@ class _HomeScreenState extends State<HomeScreen> {
     final dateKeys = grouped.keys.toList();
 
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      physics: const BouncingScrollPhysics(),
       children: [
-        // 고정된 메모 섹션
         if (pinned.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 16, 4, 12),
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 12),
             child: Row(
               children: [
-                Icon(Icons.push_pin, color: const Color(0xFFD4A574), size: 16),
-                const SizedBox(width: 6),
+                const Icon(Icons.push_pin_rounded, color: Color(0xFFC5A059), size: 14),
+                const SizedBox(width: 8),
                 Text(
-                  '고정됨',
-                  style: TextStyle(color: const Color(0xFFD4A574), fontSize: 14, fontWeight: FontWeight.w600),
+                  'Pinned',
+                  style: GoogleFonts.inter(color: const Color(0xFFC5A059), fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
           ),
           ...pinned.map((recording) => _buildRecordingCard(recording)),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
         ],
 
-        // 일반 메모 (날짜별)
         ...dateKeys.map((dateKey) {
           final recordings = grouped[dateKey]!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(4, 20, 4, 12),
+                padding: const EdgeInsets.fromLTRB(4, 16, 4, 12),
                 child: Text(
                   dateKey,
-                  style: TextStyle(color: const Color(0xFF795548).withOpacity(0.6), fontSize: 14, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF666666), 
+                    fontSize: 12, 
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
               ...recordings.map((recording) => _buildRecordingCard(recording)),
@@ -713,7 +847,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRecordingCard(Recording recording) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 12),
       child: RecordingCard(
         recording: recording,
         tags: _tags,
@@ -735,7 +869,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, List<Recording>> _groupByDate(List<Recording> recordings) {
     final grouped = <String, List<Recording>>{};
-    final dateFormat = DateFormat('M월 d일 (E)', 'ko');
+    // English date format for the new aesthetic
+    final dateFormat = DateFormat('MMM d, yyyy');
     for (final recording in recordings) {
       final dateKey = dateFormat.format(recording.createdAt);
       grouped.putIfAbsent(dateKey, () => []).add(recording);
